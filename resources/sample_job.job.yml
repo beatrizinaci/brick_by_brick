@@ -9,12 +9,8 @@ resources:
       tasks:
         - task_key: sample_job_task
           environment_key: default
-          spark_python_task:
-            python_file: ../src/brick_by_brick/hello.py
-
-        - task_key: sample_job_task_2
-          environment_key: default
-          spark_python_task:
-            python_file: ../src/brick_by_brick/hello.py
-          depends_on: 
-            - task_key: sample_job_task
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: main
+          libraries:
+            - whl: ../dist/*.whl
