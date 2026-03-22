@@ -3,23 +3,21 @@
 import os, sys, pathlib
 from contextlib import contextmanager
 
+import pytest
+import json
+import csv
 
 try:
     from databricks.connect import DatabricksSession
     from databricks.sdk import WorkspaceClient
     from pyspark.sql import SparkSession
-    import pytest
-    import json
-    import csv
-    import os
+    _HAS_DATABRICKS = True
 except ImportError:
-    raise ImportError(
-        "Test dependencies not found.\n\nRun tests using 'uv run pytest'. See http://docs.astral.sh/uv to learn more about uv."
-    )
+    _HAS_DATABRICKS = False
 
 
 @pytest.fixture()
-def spark() -> SparkSession:
+def spark():
     """Provide a SparkSession fixture for tests.
 
     Minimal example:
@@ -27,11 +25,13 @@ def spark() -> SparkSession:
             df = spark.createDataFrame([(1,)], ["x"])
             assert df.count() == 1
     """
+    if not _HAS_DATABRICKS:
+        pytest.skip("databricks-connect not installed")
     return DatabricksSession.builder.getOrCreate()
 
 
 @pytest.fixture()
-def load_fixture(spark: SparkSession):
+def load_fixture(spark):
     """Provide a callable to load JSON or CSV from fixtures/ directory.
 
     Example usage:
@@ -82,6 +82,9 @@ def _allow_stderr_output(config: pytest.Config):
 
 def pytest_configure(config: pytest.Config):
     """Configure pytest session."""
+    if not _HAS_DATABRICKS:
+        return
+
     with _allow_stderr_output(config):
         _enable_fallback_compute()
 
