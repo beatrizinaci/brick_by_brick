@@ -4,10 +4,7 @@ Ingests monthly trip CSV files from the public S3 bucket s3a://tripdata
 using Databricks Autoloader (cloudFiles). Only processes files matching
 the configured year filter (default: 2026). Uses trigger(availableNow=True)
 to behave like a batch job while maintaining exactly-once guarantees via
-checkpoint.
-
-Prerequisite: a Unity Catalog Volume must exist at the checkpoint path.
-Example: CREATE VOLUME brick_by_brick.prod.checkpoints;
+checkpoint. The required Volume is created automatically if it does not exist.
 """
 
 from loguru import logger
@@ -45,6 +42,7 @@ def extract(catalog: str, schema: str, checkpoint_path: str, year: str = DEFAULT
 
     spark = SparkSession.builder.getOrCreate()
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
+    spark.sql(f"CREATE VOLUME IF NOT EXISTS {catalog}.{schema}.checkpoints")
 
     stream = (
         spark.readStream
