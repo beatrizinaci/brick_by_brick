@@ -31,6 +31,15 @@ resources:
               - ${var.catalog}
               - ${var.schema}
           environment_key: default
+        - task_key: bronze_citibike_trips
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: bronze_citibike_trips
+            parameters:
+              - ${var.catalog}
+              - ${var.schema}
+              - /Volumes/${var.catalog}/${var.schema}/checkpoints/citibike_trips
+          environment_key: default
+
       # Tasks will be added as we build the batch extractions:
-      # - bronze_citibike_trips
       # - silver / gold transformations
