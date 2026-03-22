@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    citibike_station_status:
+      name: citibike_station_status
+      schedule:
+        quartz_cron_expression: "0 * * * * ?"  # every 1 minute
+        timezone_id: America/New_York
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: '2'
+            dependencies:
+              - ../dist/*.whl
+      tasks:
+        - task_key: extract_station_status
+          environment_key: default
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: citibike_station_status
+            parameters:
+              - ${var.catalog}
+              - ${var.schema}

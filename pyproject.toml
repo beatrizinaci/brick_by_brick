@@ -4,11 +4,7 @@ version = "0.0.1"
 authors = [{ name = "binaciodeoliveira@gmail.com" }]
 requires-python = ">=3.10,<3.13"
 dependencies = [
-    # Any dependencies for jobs and pipelines in this project can be added here
-    # See also https://docs.databricks.com/dev-tools/bundles/library-dependencies
-    #
-    # LIMITATION: for pipelines, dependencies are cached during development;
-    # add dependencies to the 'environment' section of your pipeline.yml file instead
+    "requests",
 ]
 
 [dependency-groups]
@@ -22,6 +18,7 @@ dev = [
 
 [project.scripts]
 main = "brick_by_brick.main:main"
+citibike_station_status = "brick_by_brick.bronze.citibike_station_status:main"
 
 [build-system]
 requires = ["hatchling"]
