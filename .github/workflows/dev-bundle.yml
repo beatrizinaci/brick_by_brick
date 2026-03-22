@@ -32,14 +32,20 @@ jobs:
       - name: Install Databricks CLI
         uses: databricks/setup-cli@main
 
+      - name: Derive branch slug
+        id: branch
+        run: |
+          SLUG=$(echo "${GITHUB_REF_NAME}" | sed 's/[^a-zA-Z0-9]/_/g')
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+
       - name: Validate bundle
-        run: databricks bundle validate -t dev
+        run: databricks bundle validate -t dev --var="branch=${{ steps.branch.outputs.slug }}"
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy bundle to dev
-        run: databricks bundle deploy -t dev
+        run: databricks bundle deploy -t dev --var="branch=${{ steps.branch.outputs.slug }}"
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
@@ -60,8 +66,14 @@ jobs:
       - name: Install Databricks CLI
         uses: databricks/setup-cli@main
 
+      - name: Derive branch slug
+        id: branch
+        run: |
+          SLUG=$(echo "${{ github.event.pull_request.head.ref }}" | sed 's/[^a-zA-Z0-9]/_/g')
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+
       - name: Destroy dev bundle
-        run: databricks bundle destroy -t dev --auto-approve
+        run: databricks bundle destroy -t dev --var="branch=${{ steps.branch.outputs.slug }}" --auto-approve
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
