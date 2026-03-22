@@ -22,6 +22,8 @@ dev = [
 [project.scripts]
 main = "brick_by_brick.main:main"
 citibike_station_status = "brick_by_brick.bronze.citibike_station_status:main"
+bronze_citibike_system_information = "brick_by_brick.bronze.citibike_system_information:main"
+bronze_citibike_system_regions = "brick_by_brick.bronze.citibike_system_regions:main"
 
 [build-system]
 requires = ["hatchling"]

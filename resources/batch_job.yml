@@ -13,8 +13,24 @@ resources:
             environment_version: '2'
             dependencies:
               - ../dist/*.whl
-      tasks: []
+      tasks:
+        - task_key: bronze_citibike_system_information
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: bronze_citibike_system_information
+            parameters:
+              - ${var.catalog}
+              - ${var.schema}
+          environment_key: default
+
+        - task_key: bronze_citibike_system_regions
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: bronze_citibike_system_regions
+            parameters:
+              - ${var.catalog}
+              - ${var.schema}
+          environment_key: default
       # Tasks will be added as we build the batch extractions:
-      # - bronze_citibike_station_info
       # - bronze_citibike_trips
       # - silver / gold transformations
