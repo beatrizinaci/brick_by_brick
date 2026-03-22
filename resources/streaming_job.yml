@@ -1,7 +1,7 @@
 resources:
   jobs:
-    pipeline:
-      name: brick_by_brick_pipeline
+    streaming_pipeline:
+      name: brick_by_brick_streaming
       tags:
         branch: ${var.branch}
       schedule:
