@@ -1,7 +1,7 @@
 resources:
   jobs:
     pipeline:
-      name: brick_by_brick_pipeline
+      name: brick_by_brick_pipeline_${var.branch}
       schedule:
         quartz_cron_expression: "0 * * * * ?"  # every 1 minute
         timezone_id: America/New_York
