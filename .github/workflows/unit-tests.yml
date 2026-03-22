@@ -1,0 +1,19 @@
+name: Unit Tests
+
+on:
+  push:
+
+jobs:
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Run unit tests
+        run: uv run --group unit pytest tests/bronze/ -v
