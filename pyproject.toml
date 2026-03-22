@@ -26,6 +26,7 @@ citibike_station_status = "brick_by_brick.bronze.citibike_station_status:main"
 bronze_citibike_station_information = "brick_by_brick.bronze.citibike_station_information:main"
 bronze_citibike_system_regions = "brick_by_brick.bronze.citibike_system_regions:main"
 bronze_openweather_nyc = "brick_by_brick.bronze.openweather_nyc:main"
+bronze_citibike_trips = "brick_by_brick.bronze.citibike_trips:main"
 
 [build-system]
 requires = ["hatchling"]
