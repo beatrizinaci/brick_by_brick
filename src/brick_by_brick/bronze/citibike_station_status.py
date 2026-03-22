@@ -52,6 +52,8 @@ def extract(catalog: str, schema: str) -> None:
     """Fetch station status and append to bronze Delta table."""
     spark = SparkSession.builder.getOrCreate()
 
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
+
     stations, extracted_at = fetch_station_status()
 
     for s in stations:

@@ -1,9 +1,11 @@
 resources:
   jobs:
-    citibike_station_status:
-      name: citibike_station_status
+    streaming_pipeline:
+      name: brick_by_brick_streaming
+      tags:
+        branch: ${var.branch}
       schedule:
-        quartz_cron_expression: "0 * * * * ?"  # every 1 minute
+        quartz_cron_expression: "0 */5 * * * ?"  # every 5 minutes
         timezone_id: America/New_York
       environments:
         - environment_key: default
@@ -12,7 +14,8 @@ resources:
             dependencies:
               - ../dist/*.whl
       tasks:
-        - task_key: extract_station_status
+        # ── Bronze ──────────────────────────────────────────────
+        - task_key: bronze_citibike_station_status
           environment_key: default
           python_wheel_task:
             package_name: brick_by_brick
