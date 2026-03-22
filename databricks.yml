@@ -22,9 +22,6 @@ variables:
   branch:
     description: Branch identifier used to isolate dev deployments
     default: ${workspace.current_user.short_name}
-  job_suffix:
-    description: Suffix appended to job name for dev isolation
-    default: ""
 
 targets:
   dev:
@@ -41,7 +38,6 @@ targets:
     variables:
       catalog: brick_by_brick
       schema: ${var.branch}
-      job_suffix: _${var.branch}
   prod:
     mode: production
     workspace:
