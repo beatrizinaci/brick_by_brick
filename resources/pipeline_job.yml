@@ -5,7 +5,7 @@ resources:
       tags:
         branch: ${var.branch}
       schedule:
-        quartz_cron_expression: "0 * * * * ?"  # every 1 minute
+        quartz_cron_expression: "0 */5 * * * ?"  # every 5 minutes
         timezone_id: America/New_York
       environments:
         - environment_key: default
