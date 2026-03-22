@@ -19,20 +19,25 @@ variables:
     description: The catalog to use
   schema:
     description: The schema to use
+  branch:
+    description: Branch identifier used to isolate dev deployments
+    default: ${workspace.current_user.short_name}
 
 targets:
   dev:
     # The default target uses 'mode: development' to create a development copy.
     # - Deployed resources get prefixed with '[dev my_user_name]'
     # - Any job schedules and triggers are paused by default.
+    # - In CI, each branch gets its own root_path and schema for full isolation.
     # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
     mode: development
     default: true
     workspace:
       host: https://dbc-0a03e77d-9d93.cloud.databricks.com
+      root_path: /Workspace/Users/binaciodeoliveira@gmail.com/.bundle/${bundle.name}/dev/${var.branch}
     variables:
       catalog: default
-      schema: ${workspace.current_user.short_name}
+      schema: ${var.branch}
   prod:
     mode: production
     workspace:
