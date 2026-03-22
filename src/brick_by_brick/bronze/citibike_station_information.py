@@ -6,17 +6,21 @@ to a Delta table. Designed to run once daily on Databricks.
 
 import requests
 from datetime import datetime, timezone
+from loguru import logger
 
 STATION_INFORMATION_URL = "https://gbfs.citibikenyc.com/gbfs/en/station_information.json"
 
 
 def fetch_station_information() -> tuple[list[dict], datetime]:
     """Fetch station information from GBFS API. Returns (stations, extraction_timestamp)."""
+    logger.info("Fetching station information from GBFS API")
     response = requests.get(STATION_INFORMATION_URL, timeout=30)
     response.raise_for_status()
     extracted_at = datetime.now(timezone.utc)
     data = response.json()
-    return data["data"]["stations"], extracted_at
+    stations = data["data"]["stations"]
+    logger.info(f"Fetched {len(stations)} stations")
+    return stations, extracted_at
 
 
 def extract(catalog: str, schema: str) -> None:
@@ -48,8 +52,10 @@ def extract(catalog: str, schema: str) -> None:
         ]
     )
 
-    spark = SparkSession.builder.getOrCreate()
+    table_name = f"{catalog}.{schema}.bronze_citibike_station_information"
+    logger.info(f"Starting extraction -> {table_name}")
 
+    spark = SparkSession.builder.getOrCreate()
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
 
     stations, extracted_at = fetch_station_information()
@@ -58,9 +64,8 @@ def extract(catalog: str, schema: str) -> None:
         s["_extracted_at"] = extracted_at
 
     df = spark.createDataFrame(stations, schema=schema_def)
-
-    table_name = f"{catalog}.{schema}.bronze_citibike_station_information"
     df.write.format("delta").mode("append").saveAsTable(table_name)
+    logger.info(f"Appended {df.count()} rows to {table_name}")
 
 
 def main():

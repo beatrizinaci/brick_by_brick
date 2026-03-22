@@ -93,3 +93,13 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+      - name: Drop dev schema
+        run: |
+          databricks sql execute \
+            --warehouse-id ${{ secrets.DATABRICKS_SQL_WAREHOUSE_ID }} \
+            --statement "DROP SCHEMA IF EXISTS brick_by_brick.${{ steps.branch.outputs.slug }} CASCADE" \
+            --wait 60s
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
