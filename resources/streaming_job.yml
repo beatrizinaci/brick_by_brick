@@ -5,7 +5,7 @@ resources:
       tags:
         branch: ${var.branch}
       schedule:
-        quartz_cron_expression: "0 */5 * * * ?"  # every 5 minutes
+        quartz_cron_expression: "0 */10 * * * ?"  # every 10 minutes
         timezone_id: America/New_York
       environments:
         - environment_key: default
@@ -20,6 +20,15 @@ resources:
           python_wheel_task:
             package_name: brick_by_brick
             entry_point: citibike_station_status
+            parameters:
+              - ${var.catalog}
+              - ${var.schema}
+
+        - task_key: bronze_openweather_nyc
+          environment_key: default
+          python_wheel_task:
+            package_name: brick_by_brick
+            entry_point: bronze_openweather_nyc
             parameters:
               - ${var.catalog}
               - ${var.schema}
