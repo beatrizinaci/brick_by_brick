@@ -14,10 +14,10 @@ resources:
             dependencies:
               - ../dist/*.whl
       tasks:
-        - task_key: bronze_citibike_system_information
+        - task_key: bronze_citibike_station_information
           python_wheel_task:
             package_name: brick_by_brick
-            entry_point: bronze_citibike_system_information
+            entry_point: bronze_citibike_station_information
             parameters:
               - ${var.catalog}
               - ${var.schema}
