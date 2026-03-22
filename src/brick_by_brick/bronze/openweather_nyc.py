@@ -9,6 +9,7 @@ Requires the environment variable OPENWEATHER_API_KEY.
 import os
 import requests
 from datetime import datetime, timezone
+from loguru import logger
 
 OPENWEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
 NYC_LAT = 40.7128
@@ -17,6 +18,7 @@ NYC_LON = -74.0060
 
 def fetch_nyc_weather(api_key: str) -> tuple[dict, datetime]:
     """Fetch current weather for NYC. Returns (weather_data, extraction_timestamp)."""
+    logger.info("Fetching current weather for NYC from OpenWeather API")
     response = requests.get(
         OPENWEATHER_URL,
         params={"lat": NYC_LAT, "lon": NYC_LON, "units": "metric", "appid": api_key},
@@ -72,24 +74,28 @@ def extract(catalog: str, schema: str) -> None:
         ]
     )
 
+    table_name = f"{catalog}.{schema}.bronze_openweather_nyc"
+    logger.info(f"Starting extraction -> {table_name}")
+
     try:
         from pyspark.dbutils import DBUtils
         dbutils = DBUtils(SparkSession.builder.getOrCreate())
         api_key = dbutils.secrets.get(scope="brick_by_brick", key="openweather_api_key")
+        logger.info("API key loaded from Databricks secret scope")
     except Exception:
+        logger.info("Databricks secrets unavailable, falling back to environment variable")
         api_key = os.environ["OPENWEATHER_API_KEY"]
 
     spark = SparkSession.builder.getOrCreate()
-
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
 
     raw, extracted_at = fetch_nyc_weather(api_key)
     record = parse_weather(raw, extracted_at)
+    logger.info(f"Weather: {record['weather_main']} | temp={record['temp']}°C | humidity={record['humidity']}%")
 
     df = spark.createDataFrame([record], schema=schema_def)
-
-    table_name = f"{catalog}.{schema}.bronze_openweather_nyc"
     df.write.format("delta").mode("append").saveAsTable(table_name)
+    logger.info(f"Appended 1 row to {table_name}")
 
 
 def main():
